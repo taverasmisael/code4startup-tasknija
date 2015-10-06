@@ -1,0 +1,22 @@
+<div class="auth-forms title">
+    <h2>Login</h2>
+
+    <form ng-submit="login(user)">
+        <div class="input-group input-group-lg">
+            <div class="input-group-addon">
+                <span class="mdi-communication-email" aria-hidden="true"></span>
+            </div>
+            <input type="email" ng-model="user.email" placeholder="email" required="" class="form-control">
+        </div>
+        <br>
+        <div class="input-group input-group-lg">
+            <div class="input-group-addon">
+                <span class="mdi-action-lock-outline" aria-hidden="true"></span>
+            </div>
+            <input type="password" ng-model="user.password" placeholder="Password" required="" class="form-control">
+        </div>
+        <br>
+
+        <input type="submit" value="Login" class="btn btn-info">
+    </form>
+</div>

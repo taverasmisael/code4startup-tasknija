@@ -1,0 +1,120 @@
+<div class="container">
+    <div class="row">
+        <div class="page-header">
+            <h2 class="title">Find the Ideal Task for you
+                <small>Or post your own</small>
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-offset-1 col-md-4">
+            <div class="list-group">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <span class="mdi-action-search" aria-hidden="true"></span>
+                        </div>
+                        <input type="search" ng-model="searchTask" placeholder="Search a task by name" class="form-control">
+                    </div>
+                </div>
+                <br>
+                <!-- Task List -->
+                <a class="task--item" ng-href="#/browse/{{task.$id}}" ng-repeat="task in tasks | filter: {title: searchTask, status: '!cancelled'} | orderBy: 'datetime':true">
+                    <span class="list-group-item">
+                        <span class="row-picture">
+                            <img alt="Gravatar" ng-src="{{task.gravatar}}" class="circle">
+                        </span>
+                    <span class="row-content">
+                            <h4 class="list-group-item-heading">{{ task.title | limitTo: 30 }} {{ task.title.length > 31 ? "..." : "" }}</h4>
+                            <span class="list-group-item-text">
+                                <span am-time-ago="{{task.datetime}}"></span>
+                    </span>
+                    </span>
+                    <span class="row payment">
+                            <span>{{ task.total | currency }}</span>
+                    <span class="label status {{task.status}}">{{task.status}}</span>
+                    </span>
+                    </span>
+                </a>
+            </div>
+        </div>
+        <!-- TASK DETAILS -->
+        <div class="col-md-6">
+            <div ng-show="listMode"><img src="images/browse.jpg" class="img-responsive img-browse"></div>
+            <div ng-if="!listMode">
+                <!-- Header -->
+                <div class="row">
+                    <div class="col-md-8">
+                        <h3>{{selectedTask.title}}</h3>
+                        <span>
+                            <img ng-src="{{selectedTask.gravatar}}" class="img-circle circle gravatar">
+                            Posted by {{selectedTask.title}} -
+                            <span am-time-ago="{{selectedTask.datetime}}"></span>&nbsp;
+                        <span class="label status {{selectedTask.status}}">{{selectedTask.status}}</span>
+                        </span>
+                    </div>
+                    <div class="col-md-4 title">
+                        <div class="price-tag">
+                            {{selectedTask.total | currency}}
+                            <div ng-if="isTaskCreator(selectedTask) && isOpen(selectedTask)">
+                                <a href data-toggle="dropdown" class="btn btn-warning dropdown-toggle">Admin &nbsp;&nbsp;<span class="caret big-caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="" data-toggle="modal" data-target="#ediModal">Edit Task</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="" ng-click="cancelTask(selectedTask.$id)">Cancel</a></li>
+                                </ul>
+                            </div>
+                            <div ng-show="!isTaskCreator(selectedTask) && isOpen(selectedTask) && !alreadyOffered">
+                                <button type="button" data-toggle="modal" data-target="#ofModal" class="btn btn-danger btn-sm">Make an Offer</button>
+                            </div>
+                            <div ng-if="isAssignee(selectedTask) && !isCompleted(selectedTask)">
+                                <button class="btn btn-sm btn-danger" ng-click="completeTask(selectedTask.$id)">Complete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Description -->
+                <div class="row description">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Description</h3>
+                            </div>
+                            <div class="panel-body">
+                                <p>{{selectedTask.description}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Offers -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-warning">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Offers</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="title" ng-hide="offers && offers.length > 0">
+                                    <span>No offer for this task yet</span>
+                                </div>
+                                <div class="row" ng-repeat="offer in offers | orderBy: '-total'">
+                                    <div class="col-md-10">
+                                        <img src="" alt="" ng-src="{{offer.gravatar}}" class="img-circle offer gravatar">
+                                        <span><strong>{{offer.name}}</strong><span ng-if="selectedTask.doneTime && (isTaskCreator(selectedTask) || isOfferMaker(offer) )">, finished <span am-time-ago="{{selectedTask.doneTime}}"></span></span></span>
+                                        <span class="btn btn-success btn-xs disabled" ng-if="offer.acepted">Assigned</span>
+                                        <button class="btn btn-info btn-xs" ng-click="acceptOffer(offer.$id, offer.uid)" ng-if="isTaskCreator(selectedTask) && isOpen(selectedTask)">Accept - {{offer.total | currency}}</button>
+                                        <button class="btn btn-danger btn-xs" ng-if="isOfferMaker(offer) && isOpen(selectedTask)" ng-click="cancelOffer(offer.$id)"><i class="mdi-action-delete"></i> Cancell my Offer - {{ offer.total | currency }}</button>
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div ng-include="'views/partials/comments.html'"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-include="'views/partials/edit.html'"></div>
+<div ng-include="'views/partials/offer.html'"></div>
